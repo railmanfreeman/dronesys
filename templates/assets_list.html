@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Aset - DroneOps{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="fw-bold mb-0">Aset Drone</h3>
+  <a href="{{ url_for('asset_new') }}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Aset Baru</a>
+</div>
+<div class="card card-stat p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr><th>Nama</th><th>Tipe</th><th>S/N</th><th>Status</th><th>Jam Terbang</th><th>Kalibrasi Berikutnya</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for a in assets %}
+        <tr>
+          <td class="fw-semibold">{{ a.name }}</td>
+          <td>{{ a.asset_type or '-' }}</td>
+          <td>{{ a.serial_number or '-' }}</td>
+          <td><span class="badge badge-status
+            {% if a.status=='Tersedia' %}bg-success{% elif a.status=='Digunakan' %}bg-primary{% elif a.status=='Maintenance' %}bg-warning{% else %}bg-danger{% endif %}">{{ a.status }}</span></td>
+          <td>{{ a.total_flight_hours }} jam</td>
+          <td>{{ a.next_calibration_due or '-' }}</td>
+          <td class="text-end">
+            <a href="{{ url_for('asset_edit', aid=a.id) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-pen"></i></a>
+            {% if current_role == 'admin' %}
+            <form method="post" action="{{ url_for('asset_delete', aid=a.id) }}" class="d-inline" onsubmit="return confirm('Hapus aset ini?')">
+              <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">Belum ada aset.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

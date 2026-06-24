@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Kru - DroneOps{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="fw-bold mb-0">Kru</h3>
+  <a href="{{ url_for('crew_new') }}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Kru Baru</a>
+</div>
+<div class="card card-stat p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr><th>Nama</th><th>Peran</th><th>No. Lisensi</th><th>Lisensi Expire</th><th>Telepon</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for c in crew %}
+        <tr>
+          <td class="fw-semibold">{{ c.name }}</td>
+          <td>{{ c.role or '-' }}</td>
+          <td>{{ c.license_number or '-' }}</td>
+          <td>{{ c.license_expiry or '-' }}</td>
+          <td>{{ c.phone or '-' }}</td>
+          <td><span class="badge badge-status {% if c.status=='Aktif' %}bg-success{% elif c.status=='Cuti' %}bg-warning{% else %}bg-secondary{% endif %}">{{ c.status }}</span></td>
+          <td class="text-end">
+            <a href="{{ url_for('crew_edit', cid=c.id) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-pen"></i></a>
+            {% if current_role == 'admin' %}
+            <form method="post" action="{{ url_for('crew_delete', cid=c.id) }}" class="d-inline" onsubmit="return confirm('Hapus data kru ini?')">
+              <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">Belum ada data kru.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

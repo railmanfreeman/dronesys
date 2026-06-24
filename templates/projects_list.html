@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Project - DroneOps{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="fw-bold mb-0">Project</h3>
+  <a href="{{ url_for('project_new') }}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Project Baru</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-md-5">
+    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Cari nama, klien, lokasi...">
+  </div>
+  <div class="col-md-3">
+    <select name="status" class="form-select">
+      <option value="">Semua Status</option>
+      {% for s in ['Belum Mulai','Berjalan','Tertunda','Selesai','Dibatalkan'] %}
+      <option value="{{ s }}" {{ 'selected' if status_filter==s }}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2"><button class="btn btn-outline-primary w-100"><i class="fa-solid fa-filter"></i> Filter</button></div>
+</form>
+
+<div class="card card-stat p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr><th>Nama</th><th>Klien</th><th>Lokasi</th><th>Status</th><th>Progress</th><th>Periode</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for p in projects %}
+        <tr>
+          <td><a href="{{ url_for('project_detail', pid=p.id) }}" class="fw-semibold text-decoration-none">{{ p.name }}</a></td>
+          <td>{{ p.client or '-' }}</td>
+          <td>{{ p.location or '-' }}</td>
+          <td><span class="badge badge-status
+            {% if p.status=='Selesai' %}bg-success{% elif p.status=='Berjalan' %}bg-primary{% elif p.status=='Tertunda' %}bg-warning{% elif p.status=='Dibatalkan' %}bg-danger{% else %}bg-secondary{% endif %}">
+            {{ p.status }}</span></td>
+          <td style="width:140px">
+            <div class="progress" style="height:8px;"><div class="progress-bar" style="width:{{ p.progress_percent }}%"></div></div>
+            <small>{{ p.progress_percent }}%</small>
+          </td>
+          <td><small>{{ p.start_date or '-' }} s/d {{ p.end_date or '-' }}</small></td>
+          <td class="text-end">
+            <a href="{{ url_for('project_edit', pid=p.id) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-pen"></i></a>
+            {% if current_role == 'admin' %}
+            <form method="post" action="{{ url_for('project_delete', pid=p.id) }}" class="d-inline" onsubmit="return confirm('Hapus project ini?')">
+              <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">Tidak ada project ditemukan.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

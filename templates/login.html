@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Login - DroneOps{% endblock %}
+{% block content_noauth %}
+<div class="d-flex align-items-center justify-content-center" style="min-height:100vh; background: linear-gradient(135deg,#0d6efd,#1a2332);">
+  <div class="card shadow-lg border-0" style="width: 380px; border-radius: 16px;">
+    <div class="card-body p-4">
+      <div class="text-center mb-4">
+        <i class="fa-solid fa-helicopter fa-2x text-primary mb-2"></i>
+        <h4 class="fw-bold mb-0">DroneOps</h4>
+        <small class="text-muted">Sistem Manajemen Project &amp; Aset Drone</small>
+      </div>
+      <form method="post">
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" required autofocus>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Masuk</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

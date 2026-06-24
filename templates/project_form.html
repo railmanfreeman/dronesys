@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Form Project - DroneOps{% endblock %}
+{% block content %}
+<h3 class="fw-bold mb-3">{{ 'Edit Project' if project else 'Project Baru' }}</h3>
+<div class="card card-stat p-4">
+  <form method="post">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Nama Project *</label>
+        <input type="text" name="name" class="form-control" required value="{{ project.name if project else '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Klien</label>
+        <input type="text" name="client" class="form-control" value="{{ project.client if project else '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Lokasi</label>
+        <input type="text" name="location" class="form-control" value="{{ project.location if project else '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          {% for s in ['Belum Mulai','Berjalan','Tertunda','Selesai','Dibatalkan'] %}
+          <option value="{{ s }}" {{ 'selected' if project and project.status==s }}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Progress (%)</label>
+        <input type="number" name="progress_percent" min="0" max="100" class="form-control" value="{{ project.progress_percent if project else 0 }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Tanggal Mulai</label>
+        <input type="date" name="start_date" class="form-control" value="{{ project.start_date if project else '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Tanggal Selesai (target)</label>
+        <input type="date" name="end_date" class="form-control" value="{{ project.end_date if project else '' }}">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Deskripsi</label>
+        <textarea name="description" class="form-control" rows="3">{{ project.description if project else '' }}</textarea>
+      </div>
+      {% if project %}
+      <div class="col-12">
+        <label class="form-label">Catatan Progress Baru (opsional, akan tersimpan di riwayat log)</label>
+        <textarea name="log_note" class="form-control" rows="2" placeholder="Misal: Survey lokasi selesai, menunggu approval klien..."></textarea>
+      </div>
+      {% endif %}
+    </div>
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Simpan</button>
+      <a href="{{ url_for('projects_list') }}" class="btn btn-light">Batal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

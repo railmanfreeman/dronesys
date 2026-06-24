@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Form Aset - DroneOps{% endblock %}
+{% block content %}
+<h3 class="fw-bold mb-3">{{ 'Edit Aset' if asset else 'Aset Baru' }}</h3>
+<div class="card card-stat p-4">
+  <form method="post">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Nama Aset *</label>
+        <input type="text" name="name" class="form-control" required value="{{ asset.name if asset else '' }}" placeholder="Misal: DJI Matrice 300 #1">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Tipe Aset</label>
+        <input type="text" name="asset_type" class="form-control" value="{{ asset.asset_type if asset else '' }}" placeholder="Drone / Battery / Sensor / Controller">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Nomor Seri</label>
+        <input type="text" name="serial_number" class="form-control" value="{{ asset.serial_number if asset else '' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          {% for s in ['Tersedia','Digunakan','Maintenance','Rusak'] %}
+          <option value="{{ s }}" {{ 'selected' if asset and asset.status==s }}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Total Jam Terbang</label>
+        <input type="number" step="0.1" name="total_flight_hours" class="form-control" value="{{ asset.total_flight_hours if asset else 0 }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Tanggal Kalibrasi Terakhir</label>
+        <input type="date" name="last_calibration_date" class="form-control" value="{{ asset.last_calibration_date if asset else '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Jadwal Kalibrasi Berikutnya</label>
+        <input type="date" name="next_calibration_due" class="form-control" value="{{ asset.next_calibration_due if asset else '' }}">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Catatan</label>
+        <textarea name="notes" class="form-control" rows="3">{{ asset.notes if asset else '' }}</textarea>
+      </div>
+    </div>
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Simpan</button>
+      <a href="{{ url_for('assets_list') }}" class="btn btn-light">Batal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

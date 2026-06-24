@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name }} - DroneOps{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h3 class="fw-bold mb-1">{{ project.name }}</h3>
+    <span class="text-muted">{{ project.client or '-' }} &middot; {{ project.location or '-' }}</span>
+  </div>
+  <a href="{{ url_for('project_edit', pid=project.id) }}" class="btn btn-outline-primary"><i class="fa-solid fa-pen"></i> Edit</a>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-3"><div class="card card-stat p-3"><small class="text-muted">Status</small><div class="fw-bold">{{ project.status }}</div></div></div>
+  <div class="col-md-3"><div class="card card-stat p-3"><small class="text-muted">Progress</small><div class="fw-bold">{{ project.progress_percent }}%</div></div></div>
+  <div class="col-md-3"><div class="card card-stat p-3"><small class="text-muted">Mulai</small><div class="fw-bold">{{ project.start_date or '-' }}</div></div></div>
+  <div class="col-md-3"><div class="card card-stat p-3"><small class="text-muted">Target Selesai</small><div class="fw-bold">{{ project.end_date or '-' }}</div></div></div>
+</div>
+
+{% if project.description %}
+<div class="card card-stat p-3 mb-3"><strong>Deskripsi:</strong> {{ project.description }}</div>
+{% endif %}
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card card-stat p-3">
+      <h6 class="fw-bold mb-3"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Progress</h6>
+      <ul class="list-group list-group-flush">
+        {% for l in logs %}
+        <li class="list-group-item px-0">
+          <div class="d-flex justify-content-between">
+            <small class="text-muted">{{ l.log_date }} &middot; {{ l.created_by or '-' }}</small>
+            <span class="badge bg-light text-dark">{{ l.progress_at_time }}%</span>
+          </div>
+          <div>{{ l.note }}</div>
+        </li>
+        {% else %}
+        <li class="list-group-item px-0 text-muted">Belum ada catatan progress.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card card-stat p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0"><i class="fa-solid fa-calendar-check"></i> Assignment Kru &amp; Aset</h6>
+        <a href="{{ url_for('assignment_new') }}" class="btn btn-sm btn-outline-primary">+ Tambah</a>
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for a in assignments %}
+        <li class="list-group-item px-0">
+          <div class="d-flex justify-content-between">
+            <span><i class="fa-solid fa-user me-1"></i>{{ a.crew_name or '-' }} <span class="text-muted">/</span> <i class="fa-solid fa-drone me-1"></i>{{ a.asset_name or '-' }}</span>
+            <span class="badge bg-light text-dark">{{ a.status }}</span>
+          </div>
+          <small class="text-muted">{{ a.assignment_date or '-' }} &middot; {{ a.role_in_project or '-' }}</small>
+        </li>
+        {% else %}
+        <li class="list-group-item px-0 text-muted">Belum ada assignment.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

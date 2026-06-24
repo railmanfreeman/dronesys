@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Sistem Manajemen Drone Ops{% endblock %}</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<style>
+  :root {
+    --brand: #0d6efd;
+    --brand-dark: #084298;
+  }
+  body { background: #f4f6f9; font-family: 'Segoe UI', system-ui, sans-serif; }
+  .navbar-brand { font-weight: 700; }
+  .sidebar {
+    min-height: calc(100vh - 56px);
+    background: #1a2332;
+    color: #cfd8e3;
+  }
+  .sidebar a {
+    color: #cfd8e3;
+    padding: 12px 20px;
+    display: block;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+  }
+  .sidebar a:hover, .sidebar a.active {
+    background: #243044;
+    color: #fff;
+    border-left: 3px solid var(--brand);
+  }
+  .card-stat {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card-stat .icon-box {
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    color: white;
+  }
+  .badge-status { font-size: 0.78rem; padding: 5px 10px; border-radius: 20px; }
+  .table-responsive { border-radius: 10px; overflow: hidden; }
+  .top-navbar { box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+  @media (max-width: 768px) {
+    .sidebar { min-height: auto; }
+  }
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+{% if current_user %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary top-navbar sticky-top">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMobile">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-helicopter"></i> DroneOps</a>
+    <div class="ms-auto d-flex align-items-center text-white">
+      <span class="me-3"><i class="fa-solid fa-user-circle"></i> {{ current_user }} <small class="opacity-75">({{ current_role }})</small></span>
+      <a href="{{ url_for('logout') }}" class="btn btn-sm btn-light"><i class="fa-solid fa-sign-out-alt"></i> Keluar</a>
+    </div>
+  </div>
+</nav>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-2 col-md-3 sidebar collapse d-md-block" id="sidebarMobile">
+      <div class="pt-3">
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint=='dashboard' }}"><i class="fa-solid fa-chart-line me-2"></i>Dashboard</a>
+        <a href="{{ url_for('projects_list') }}" class="{{ 'active' if 'project' in request.endpoint }}"><i class="fa-solid fa-diagram-project me-2"></i>Project</a>
+        <a href="{{ url_for('assets_list') }}" class="{{ 'active' if 'asset' in request.endpoint }}"><i class="fa-solid fa-drone me-2"></i>Aset</a>
+        <a href="{{ url_for('crew_list') }}" class="{{ 'active' if 'crew' in request.endpoint }}"><i class="fa-solid fa-people-group me-2"></i>Kru</a>
+        <a href="{{ url_for('assignments_list') }}" class="{{ 'active' if 'assignment' in request.endpoint }}"><i class="fa-solid fa-calendar-check me-2"></i>Assignment</a>
+        {% if current_role == 'admin' %}
+        <a href="{{ url_for('users_manage') }}" class="{{ 'active' if request.endpoint=='users_manage' }}"><i class="fa-solid fa-user-shield me-2"></i>Kelola User</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-lg-10 col-md-9 py-4">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category=='error' else 'success' }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% else %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container mt-3">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category=='error' else 'success' }}">{{ message }}</div>
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content_noauth %}{% endblock %}
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

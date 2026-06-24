@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Form Assignment - DroneOps{% endblock %}
+{% block content %}
+<h3 class="fw-bold mb-3">Assignment Baru</h3>
+<div class="card card-stat p-4">
+  <form method="post">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Project *</label>
+        <select name="project_id" class="form-select" required>
+          <option value="">-- Pilih Project --</option>
+          {% for p in projects %}
+          <option value="{{ p.id }}">{{ p.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Tanggal Assignment</label>
+        <input type="date" name="assignment_date" class="form-control">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Kru</label>
+        <select name="crew_id" class="form-select">
+          <option value="">-- Tidak ada --</option>
+          {% for c in crew %}
+          <option value="{{ c.id }}">{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Aset</label>
+        <select name="asset_id" class="form-select">
+          <option value="">-- Tidak ada --</option>
+          {% for a in assets %}
+          <option value="{{ a.id }}">{{ a.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Peran dalam Project</label>
+        <input type="text" name="role_in_project" class="form-control" placeholder="Misal: Pilot Utama, Inspector">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          {% for s in ['Dijadwalkan','Berjalan','Selesai'] %}
+          <option value="{{ s }}">{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Catatan</label>
+        <textarea name="notes" class="form-control" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Simpan</button>
+      <a href="{{ url_for('assignments_list') }}" class="btn btn-light">Batal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

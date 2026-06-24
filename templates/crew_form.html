@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Form Kru - DroneOps{% endblock %}
+{% block content %}
+<h3 class="fw-bold mb-3">{{ 'Edit Kru' if member else 'Kru Baru' }}</h3>
+<div class="card card-stat p-4">
+  <form method="post">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Nama *</label>
+        <input type="text" name="name" class="form-control" required value="{{ member.name if member else '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Peran</label>
+        <input type="text" name="role" class="form-control" value="{{ member.role if member else '' }}" placeholder="Pilot / Co-Pilot / Technician / Surveyor">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">No. Lisensi</label>
+        <input type="text" name="license_number" class="form-control" value="{{ member.license_number if member else '' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Lisensi Expire</label>
+        <input type="date" name="license_expiry" class="form-control" value="{{ member.license_expiry if member else '' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Telepon</label>
+        <input type="text" name="phone" class="form-control" value="{{ member.phone if member else '' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          {% for s in ['Aktif','Cuti','Nonaktif'] %}
+          <option value="{{ s }}" {{ 'selected' if member and member.status==s }}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Catatan</label>
+        <textarea name="notes" class="form-control" rows="3">{{ member.notes if member else '' }}</textarea>
+      </div>
+    </div>
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Simpan</button>
+      <a href="{{ url_for('crew_list') }}" class="btn btn-light">Batal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

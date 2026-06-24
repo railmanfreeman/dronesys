@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Kelola User - DroneOps{% endblock %}
+{% block content %}
+<h3 class="fw-bold mb-3">Kelola User</h3>
+<div class="row g-3">
+  <div class="col-md-5">
+    <div class="card card-stat p-4">
+      <h6 class="fw-bold mb-3">Tambah User Baru</h6>
+      <form method="post">
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Role</label>
+          <select name="role" class="form-select">
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Tambah User</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="card card-stat p-3">
+      <h6 class="fw-bold mb-3">Daftar User</h6>
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th>Username</th><th>Role</th><th>Dibuat</th><th></th></tr></thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u.username }}</td>
+            <td><span class="badge {{ 'bg-primary' if u.role=='admin' else 'bg-secondary' }}">{{ u.role }}</span></td>
+            <td><small>{{ u.created_at }}</small></td>
+            <td class="text-end">
+              {% if u.id != session.get('user_id') %}
+              <form method="post" action="{{ url_for('user_delete', uid=u.id) }}" onsubmit="return confirm('Hapus user ini?')">
+                <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

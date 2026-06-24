@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - DroneOps{% endblock %}
+{% block content %}
+<h3 class="fw-bold mb-4">Dashboard</h3>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="card card-stat p-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <div class="text-muted small">Total Project</div>
+          <div class="fs-3 fw-bold">{{ total_projects }}</div>
+        </div>
+        <div class="icon-box bg-primary"><i class="fa-solid fa-diagram-project"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="card card-stat p-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <div class="text-muted small">Project Berjalan</div>
+          <div class="fs-3 fw-bold">{{ active_projects }}</div>
+        </div>
+        <div class="icon-box bg-warning"><i class="fa-solid fa-spinner"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="card card-stat p-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <div class="text-muted small">Aset Digunakan</div>
+          <div class="fs-3 fw-bold">{{ assets_in_use }} / {{ total_assets }}</div>
+        </div>
+        <div class="icon-box bg-info"><i class="fa-solid fa-drone"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="card card-stat p-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <div class="text-muted small">Kru Aktif</div>
+          <div class="fs-3 fw-bold">{{ total_crew }}</div>
+        </div>
+        <div class="icon-box bg-success"><i class="fa-solid fa-people-group"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-5">
+    <div class="card card-stat p-3 h-100">
+      <h6 class="fw-bold mb-3">Status Project</h6>
+      <canvas id="statusChart" height="220"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card card-stat p-3 h-100">
+      <h6 class="fw-bold mb-3"><i class="fa-solid fa-triangle-exclamation text-warning"></i> Perlu Perhatian</h6>
+      <div class="row">
+        <div class="col-md-6">
+          <small class="text-muted">Kalibrasi Aset Terdekat</small>
+          <ul class="list-group list-group-flush mt-2">
+            {% for a in upcoming_calibration %}
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span>{{ a.name }}</span>
+              <span class="badge {{ 'bg-danger' if a.next_calibration_due < today else 'bg-secondary' }}">{{ a.next_calibration_due }}</span>
+            </li>
+            {% else %}
+            <li class="list-group-item px-0 text-muted small">Tidak ada data.</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <small class="text-muted">Lisensi Kru Terdekat Expire</small>
+          <ul class="list-group list-group-flush mt-2">
+            {% for c in expiring_licenses %}
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span>{{ c.name }}</span>
+              <span class="badge {{ 'bg-danger' if c.license_expiry < today else 'bg-secondary' }}">{{ c.license_expiry }}</span>
+            </li>
+            {% else %}
+            <li class="list-group-item px-0 text-muted small">Tidak ada data.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-stat p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="fw-bold mb-0">Project Terbaru</h6>
+    <a href="{{ url_for('projects_list') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light"><tr><th>Nama</th><th>Klien</th><th>Status</th><th>Progress</th></tr></thead>
+      <tbody>
+        {% for p in recent_projects %}
+        <tr style="cursor:pointer" onclick="location.href='{{ url_for('project_detail', pid=p.id) }}'">
+          <td>{{ p.name }}</td>
+          <td>{{ p.client or '-' }}</td>
+          <td><span class="badge badge-status bg-primary">{{ p.status }}</span></td>
+          <td style="width:160px">
+            <div class="progress" style="height:8px;">
+              <div class="progress-bar" style="width:{{ p.progress_percent }}%"></div>
+            </div>
+            <small>{{ p.progress_percent }}%</small>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center text-muted py-3">Belum ada project.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+fetch("{{ url_for('api_chart_status') }}")
+  .then(r => r.json())
+  .then(d => {
+    new Chart(document.getElementById('statusChart'), {
+      type: 'doughnut',
+      data: {
+        labels: d.labels,
+        datasets: [{ data: d.data, backgroundColor: ['#0d6efd','#ffc107','#198754','#dc3545','#6c757d'] }]
+      },
+      options: { plugins: { legend: { position: 'bottom' } } }
+    });
+  });
+</script>
+{% endblock %}
