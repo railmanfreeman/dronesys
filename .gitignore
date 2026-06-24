@@ -1,0 +1,4 @@
+dronesys.db
+__pycache__/
+*.pyc
+.env
